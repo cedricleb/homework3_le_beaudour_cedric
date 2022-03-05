@@ -41,7 +41,7 @@ class ReminderViewModel(
             setOneTimeNotificationWithTime(reminder, id)
             if(reminder.notification && reminder.multiple_notification) {
                 //calls function to set a notification before the reminder time
-                setNotificationBeforeTime(reminder, day, hour, minute, second)
+                setNotificationBeforeTime(reminder, id, day, hour, minute, second)
             }
 
     }
@@ -104,7 +104,7 @@ fun setOneTimeNotificationWithTime(reminder : Reminder, id : Long) {
         .observeForever { workInfo ->
             if (workInfo.state == WorkInfo.State.SUCCEEDED) {
                 if(reminder.notification){
-                    createReminderNotification(reminder)
+                    createReminderNotification(reminder, id)
                 }
                 updateReminderSeen(id, true)
             }
@@ -114,8 +114,8 @@ fun setOneTimeNotificationWithTime(reminder : Reminder, id : Long) {
 
 //function to create the notification
 // WARNING notificationId must be different for each notification (of the same WorkManager ?)
-private fun createReminderNotification(reminder: Reminder) {
-    val notificationId : Int = 1 //System.currentTimeMillis().toInt()
+private fun createReminderNotification(reminder: Reminder, id : Long) {
+    val notificationId : Int = id.toInt() //System.currentTimeMillis().toInt()
     val builder = NotificationCompat.Builder(Graph.appContext, "CHANNEL_ID")
         .setSmallIcon(R.drawable.ic_launcher_background)
         .setContentTitle("Reminder !")
@@ -170,7 +170,7 @@ fun timeBeforeReminder (reminder_time : String) : Long {
 
 
 //for multiple notification (a notification ten second before the reminder time)
-fun setNotificationTenSecondsBefore(reminder : Reminder) {
+fun setNotificationTenSecondsBefore(reminder : Reminder, id : Long) {
     val workManager = WorkManager.getInstance(Graph.appContext)
     val constraints = androidx.work.Constraints.Builder()
         .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -189,7 +189,7 @@ fun setNotificationTenSecondsBefore(reminder : Reminder) {
     workManager.getWorkInfoByIdLiveData(notificationWorker.id)
         .observeForever { workInfo ->
             if (workInfo.state == WorkInfo.State.SUCCEEDED) {
-                createReminderNotificationTenSecondsBefore(reminder)
+                createReminderNotificationTenSecondsBefore(reminder, id)
             }
         }
 }
@@ -197,8 +197,8 @@ fun setNotificationTenSecondsBefore(reminder : Reminder) {
 //for multiple notification (a notification ten second before the reminder time)
 //function to create the notification
 //WARNING notificationId must be different for each notification (of the same WorkManager ?)
-private fun createReminderNotificationTenSecondsBefore(reminder: Reminder) {
-    val notificationId : Int = 2 //System.currentTimeMillis().toInt()
+private fun createReminderNotificationTenSecondsBefore(reminder: Reminder, id : Long) {
+    val notificationId : Int = id.toInt() //System.currentTimeMillis().toInt()
     val builder = NotificationCompat.Builder(Graph.appContext, "CHANNEL_ID")
         .setSmallIcon(R.drawable.ic_launcher_background)
         .setContentTitle("Reminder ! In ten seconds :")
@@ -212,7 +212,7 @@ private fun createReminderNotificationTenSecondsBefore(reminder: Reminder) {
 }
 
 //for multiple notification
-fun setNotificationBeforeTime(reminder : Reminder, day : Long, hour : Long, minute : Long, second : Long) {
+fun setNotificationBeforeTime(reminder : Reminder, id : Long, day : Long, hour : Long, minute : Long, second : Long) {
     val workManager = WorkManager.getInstance(Graph.appContext)
     val constraints = androidx.work.Constraints.Builder()
         .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -231,7 +231,7 @@ fun setNotificationBeforeTime(reminder : Reminder, day : Long, hour : Long, minu
     workManager.getWorkInfoByIdLiveData(notificationWorker.id)
         .observeForever { workInfo ->
             if (workInfo.state == WorkInfo.State.SUCCEEDED) {
-                createReminderNotificationBeforeTime(reminder, day, hour, minute, second)
+                createReminderNotificationBeforeTime(reminder, id, day, hour, minute, second)
             }
         }
 }
@@ -239,8 +239,8 @@ fun setNotificationBeforeTime(reminder : Reminder, day : Long, hour : Long, minu
 //for multiple notification
 //function to create the notification
 //WARNING notificationId must be different for each notification (of the same WorkManager ?)
-private fun createReminderNotificationBeforeTime(reminder: Reminder, day : Long, hour : Long, minute : Long, second : Long) {
-    val notificationId : Int = 3 //System.currentTimeMillis().toInt()
+private fun createReminderNotificationBeforeTime(reminder: Reminder, id : Long, day : Long, hour : Long, minute : Long, second : Long) {
+    val notificationId : Int = id.toInt() //System.currentTimeMillis().toInt()
     val builder = NotificationCompat.Builder(Graph.appContext, "CHANNEL_ID")
         .setSmallIcon(R.drawable.ic_launcher_background)
         .setContentTitle("Reminder : In $day day $hour hour $minute min and $second sec :")
